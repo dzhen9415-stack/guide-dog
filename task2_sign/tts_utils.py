@@ -11,11 +11,19 @@ def speak(text: str, blocking: bool = False):
     print(f"[TTS] {text}")
 
     def _run():
+        p1 = subprocess.Popen(
+            ["espeak-ng", "-v", "zh", "-s", "150", "--stdout", text],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
         subprocess.run(
-            ["espeak-ng", "-v", "zh", "-s", "150", text],
+            ["aplay", "-q"],
+            stdin=p1.stdout,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        p1.stdout.close()
+        p1.wait()
 
     if blocking:
         _run()
